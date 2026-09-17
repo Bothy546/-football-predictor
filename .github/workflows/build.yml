@@ -1,0 +1,30 @@
+name: Build APK
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '11'
+    
+    - name: Download and Setup Gradle
+      run: |
+        wget -q https://services.gradle.org/distributions/gradle-7.6-bin.zip
+        unzip -q gradle-7.6-bin.zip
+        rm gradle-7.6-bin.zip
+    
+    - name: Build APK
+      run: ./gradle-7.6/bin/gradle assembleDebug
+      
+    - uses: actions/upload-artifact@v4
+      with:
+        name: app
+        path: app/build/outputs/apk/debug/*.apk
